@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>3COINS お家</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* ======================================
+   コンセプトセクション
+   ====================================== */
+.concept-section {
+  width: 100%;
+  max-width: 390px;
+  background: #ebe5d6;
+  overflow: hidden;
+  padding-bottom: 40px;
+}
+
+.concept-section > img {
+  width: 100%;
+  display: block;
+}
+
+/* ======================================
+   ポイントセクション（ディゾルブ）
+   ====================================== */
+.point-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: calc(10387 / 1737 * 100%); /* 縦横比を維持 */
+}
+
+.point-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  display: block;
+}
+
+.point-frame {
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* フレーム位置はJSで計算して適用 */
+.pf1, .pf2, .pf3, .pf4 { left: 50%; transform: translateX(-50%); }
+
+.pf-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  position: absolute;
+  top: 0; left: 0;
+}
+
+.pf-img:first-child {
+  position: relative; /* フレームの高さをこの画像で決める */
+}
+
+.pf-img.active {
+  opacity: 1;
+}
+
+/* ======================================
+   モバイルメニュー
+   ====================================== */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.mobile-menu-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0; right: 0; bottom: 20%;
+  width: 78%;
+  max-width: 320px;
+  background: #6a7820;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 32px 40px;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px 0 0 16px;
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+.mobile-menu-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none;
+  border: 2px solid rgba(255,255,255,0.8);
+  color: #fff;
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+}
+
+.mobile-menu-item {
+  display: block;
+  padding: 20px 0;
+  text-decoration: none;
+}
+
+.mobile-menu-item img {
+  height: 52px;
+  width: auto;
+  display: block;
+}
+
+.mobile-menu-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.3);
+  margin: 0;
+}
+
+.mobile-menu-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 16px;
+}
+
+.mobile-menu-cta img {
+  width: 65%;
+  height: auto;
+  display: block;
+}
+
+/* ======================================
+   固定ヘッダー
+   ====================================== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+  z-index: 100;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.55));
+}
+
+.header img {
+  pointer-events: auto;
+}
+
+.header-logo {
+  height: 22px;
+  width: auto;
+}
+
+.header-menu {
+  height: 44px;
+  width: auto;
+}
+
+/* ======================================
+   PLANセクション
+   ====================================== */
+.plan-section {
+  width: 100%;
+  max-width: 390px;
+  background: #cdc7a9;
+  padding: 32px 20px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+}
+
+.plan-header-img {
+  display: block;
+  width: 45%;
+  margin: 0 auto 24px;
+}
+
+/* タブヘッダー */
+.plan-tab-header {
+  display: flex;
+  border-bottom: 1px solid #b8b296;
+}
+
+.plan-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  background: #b8b296;
+  border: 1px solid #b8b296;
+  border-bottom: none;
+  cursor: pointer;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.plan-tab-btn:first-child { border-radius: 8px 0 0 0; }
+.plan-tab-btn:last-child  { border-radius: 0 8px 0 0; }
+
+.plan-tab-btn.active {
+  background: #fff;
+  color: #555;
+  border-color: #b8b296;
+  border-bottom: 1px solid #fff;
+  margin-bottom: -1px;
+  z-index: 1;
+  position: relative;
+}
+
+/* タブパネル */
+.plan-tab-panel {
+  display: none;
+  background: #fff;
+  border: 1px solid #b8b296;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 16px 12px;
+}
+
+.plan-tab-panel.active { display: block; }
+
+/* 1F/2F 矢印ナビ */
+.floor-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floor-arrow {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.floor-arrow:hover { color: #555; }
+
+.floor-slides { flex: 1; overflow: hidden; }
+
+.floor-slide { display: none; }
+.floor-slide.active { display: block; }
+
+.floor-img {
+  width: 100%;
+  display: block;
+  border-radius: 6px;
+}
+
+.floor-info {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.7;
+}
+
+/* 説明テキスト */
+.plan-description {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #3a3630;
+  line-height: 2;
+  display: table;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* ======================================
+   PC サイドパネル
+   ====================================== */
+.pc-left,
+.pc-right {
+  display: none;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  background: #6a7820;
+  z-index: 50;
+  overflow: hidden;
+}
+
+@media (min-width: 800px) {
+  .pc-left,
+  .pc-right {
+    display: flex;
+  }
+  /* 左パネル幅・右パネル幅分のpaddingでコンテンツを中間にぴったり収める */
+  body {
+    padding-left: calc(90vw - 390px);
+    padding-right: 10vw;
+    align-items: flex-start;
+  }
+  /* PCでは固定ヘッダーを非表示 */
+  .header {
+    display: none;
+  }
+}
+
+.pc-left  { left: 0; right: calc(10vw + 390px); }
+.pc-right { right: 0; width: 10vw; }
+
+/* 左パネル内レイアウト */
+.pc-left-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  padding: 32px 24px;
+}
+
+.pc-house-imgs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.pc-house-imgs img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.pc-nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.pc-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8e2ce;
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-decoration: none;
+}
+
+.pc-nav-btn img {
+  width: 100%;
+  max-height: 48px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.pc-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #e05a1a;
+  border-radius: 8px;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.pc-cta-btn img {
+  width: 60%;
+  height: auto;
+  display: block;
+}
+
+.pc-harmony {
+  margin-top: auto;
+}
+
+.pc-harmony img {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+/* 右パネル縦スクロールテキスト */
+.pc-right {
+  align-items: center;
+  justify-content: center;
+}
+
+.pc-right-track {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.7);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  line-height: 2;
+  animation: scroll-up-text 75s linear infinite;
+  font-family: "Zen Maru Gothic", "Hiragino Sans", sans-serif;
+}
+
+@keyframes scroll-up-text {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* ======================================
+   コンテナ
+   透過PNGの縦横比 (1737 : 3830) に合わせる
+   ====================================== */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 1737 / 3830;
+  overflow: hidden;
+  background: #ebe5d6;
+}
+
+/* ======================================
+   フレームエリア（背景スライドショー）
+   透過PNGの各窓枠に合わせて位置調整
+   ====================================== */
+.frame {
+  position: absolute;
+  overflow: hidden;
+}
+
+/* 上の大きなフレーム */
+.frame-top {
+  left:   4.20%;
+  top:    0.00%;
+  width:  95.80%;
+  height: 61.91%;
+}
+
+/* 左下フレーム */
+.frame-bl {
+  left:   0.00%;
+  top:    63.11%;
+  width:  52.50%;
+  height: 18.00%;
+}
+
+/* 右下フレーム */
+.frame-br {
+  left:   55.15%;
+  top:    63.11%;
+  width:  40.70%;
+  height: 21.62%;
+}
+
+/* ======================================
+   スライドショー（横スライド）
+   ====================================== */
+.slides {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.slides img {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 画像未設定時のプレースホルダー */
+.placeholder {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  background: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 11px;
+  font-family: -apple-system, sans-serif;
+  gap: 6px;
+  text-align: center;
+  padding: 8px;
+}
+
+.placeholder span { font-size: 10px; color: #444; }
+
+/* ======================================
+   オーバーレイ（透過PNG）
+   ====================================== */
+.overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+/* ======================================
+   ポン！アニメーション
+   ====================================== */
+@keyframes pop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pop-img {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* セット1（スライド1枚目） */
+.debut-img {
+  left: 5%;
+  top: 55%;
+  width: 64%;
+  transform-origin: left center;
+}
+
+.family-img {
+  left: 70%;
+  top: 48%;
+  width: 23%;
+  transform-origin: right center;
+}
+
+.kettle-img {
+  left: -2%;
+  top: 76%;
+  width: 22%;
+  transform-origin: left bottom;
+}
+
+/* セット2（スライド2枚目） */
+.new-img {
+  left: 8%;
+  top: 27%;
+  width: 50%;
+  transform-origin: left center;
+}
+
+.bottle-img {
+  left: 2%;
+  top: 55%;
+  width: 18%;
+  transform-origin: left bottom;
+}
+
+.kago-img {
+  left: 75%;
+  top: 56%;
+  width: 30%;
+  transform-origin: right center;
+}
+
+.lease-img {
+  left: -8%;
+  top: 70%;
+  width: 31%;
+  transform-origin: left bottom;
+}
+
+.hylo-logo {
+  position: absolute;
+  left: 50%;
+  top: 9%;
+  width: 65%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- 固定ヘッダー -->
+<header class="header">
+  <a href="https://shizensozainoie.co.jp/" target="_blank" style="pointer-events:auto;">
+    <img class="header-logo" src="./img/LOGO_yoko.png" alt="HARMONY">
+  </a>
+  <img class="header-menu" src="./img/MENU.png" alt="MENU" onclick="openMenu()" style="cursor:pointer;">
+</header>
+
+<div class="container">
+
+  <!-- ============================================================
+       フレーム①：上の大きなエリア
+       画像を追加する場合: <img src="./画像ファイル名.jpg" alt="">
+       を <div class="placeholder">...</div> の代わりに入れてください
+       ============================================================ -->
+  <div class="frame frame-top">
+    <div class="slides" id="slides1">
+
+      <!-- ↓ ここを差し替え（複数枚 OK・順番に自動スライド） -->
+      <img src="./img/FV_2F.png" alt="上フレーム 画像1">
+      <img src="./img/FV_1F.png" alt="上フレーム 画像2">
+      <!-- ↑ ここまで -->
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       フレーム②：左下エリア
+       ============================================================ -->
+  <div class="frame frame-bl">
+    <div class="slides" id="slides2">
+
+      <!-- ↓ ここを差し替え -->
+      <img src="./img/2FLDK.png" alt="左下フレーム 画像1">
+      <img src="./img/1FLDK.png" alt="左下フレーム 画像2">
+      <!-- ↑ ここまで -->
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       フレーム③：右下エリア
+       ============================================================ -->
+  <div class="frame frame-br">
+    <div class="slides" id="slides3">
+
+      <!-- ↓ ここを差し替え -->
+      <img src="./img/FVBED.png" alt="右下フレーム 画像1">
+      <img src="./img/FVlifestyle.png" alt="右下フレーム 画像2">
+      <!-- ↑ ここまで -->
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       オーバーレイ（透過PNG）
+       src に実際のファイル名を入れてください（例: ./frame_overlay.png）
+       ============================================================ -->
+  <img class="overlay" src="./img/FV.png" alt="">
+
+  <!-- HYLOロゴ -->
+  <img class="hylo-logo" src="./img/HYLO_logo.png" alt="HYLO logo">
+
+  <!-- セット1：スライド1枚目用 -->
+  <img class="pop-img debut-img"  src="./img/début.png"  alt="début"  data-set="1" data-delay="0.3">
+  <img class="pop-img family-img" src="./img/family.png" alt="family" data-set="1" data-delay="0.6">
+  <img class="pop-img kettle-img" src="./img/kettle.png" alt="kettle" data-set="1" data-delay="0.9">
+
+  <!-- セット2：スライド2枚目用 -->
+  <img class="pop-img new-img"    src="./img/NEW.png"    alt="NEW"    data-set="2" data-delay="0.2">
+  <img class="pop-img bottle-img" src="./img/bottle.png" alt="bottle" data-set="2" data-delay="0.4">
+  <img class="pop-img kago-img"   src="./img/kago.png"   alt="kago"   data-set="2" data-delay="0.6">
+  <img class="pop-img lease-img"  src="./img/lease.png"  alt="lease"  data-set="2" data-delay="0.8">
+
+</div>
+
+<!-- コンセプトセクション -->
+<section id="concept" class="concept-section">
+  <img src="./img/concept.png" alt="concept">
+
+  <!-- ポイントセクション（ディゾルブ） -->
+  <div id="point" class="point-container" style="margin-top:48px;">
+    <!-- フレーム1：HYLO_2F → hiraya -->
+    <div class="point-frame pf1">
+      <img class="pf-img active" src="./img/HYLO_2F.png" alt="">
+      <img class="pf-img"        src="./img/hiraya.png"  alt="">
+    </div>
+    <!-- フレーム2 -->
+    <div class="point-frame pf2">
+      <img class="pf-img active" src="./img/point2-1.png" alt="">
+      <img class="pf-img"        src="./img/point2-2.png" alt="">
+    </div>
+    <!-- フレーム3 -->
+    <div class="point-frame pf3">
+      <img class="pf-img active" src="./img/point3-1.png" alt="">
+      <img class="pf-img"        src="./img/point3-2.png" alt="">
+    </div>
+    <!-- フレーム4 -->
+    <div class="point-frame pf4">
+      <img class="pf-img active" src="./img/point4-1.png" alt="">
+      <img class="pf-img"        src="./img/point4-2.png" alt="">
+    </div>
+    <!-- point.pngをオーバーレイ -->
+    <img class="point-overlay" src="./img/point.png" alt="">
+  </div>
+</section>
+
+<!-- PLANセクション -->
+<section id="plan" class="plan-section">
+
+  <img class="plan-header-img" src="./img/PLAN.png" alt="PLAN">
+
+  <div class="plan-tab-wrap">
+    <div class="plan-tab-header">
+      <button class="plan-tab-btn active" onclick="switchPlanTab('2kai', this)">2階建て</button>
+      <button class="plan-tab-btn" onclick="switchPlanTab('hiraya', this)">平屋</button>
+    </div>
+
+    <!-- 2階建てパネル -->
+    <div id="plan-2kai" class="plan-tab-panel active">
+      <div class="floor-nav">
+        <button class="floor-arrow" onclick="switchFloor(-1)">◄</button>
+        <div class="floor-slides">
+          <div class="floor-slide active" id="floor-1f">
+            <img class="floor-img" src="./img/PLAN_1F.png" alt="1F間取り">
+            <div class="floor-info">
+              延床面積 / 89.42㎡（27.05坪）　1F床面積 / 49.68㎡（15.03坪）<br>
+              2F床面積 / 39.74㎡（12.02坪）
+            </div>
+          </div>
+          <div class="floor-slide" id="floor-2f">
+            <img class="floor-img" src="./img/PLAN_2F.png" alt="2F間取り">
+            <div class="floor-info">
+              延床面積 / 89.42㎡（27.05坪）　1F床面積 / 49.68㎡（15.03坪）<br>
+              2F床面積 / 39.74㎡（12.02坪）
+            </div>
+          </div>
+        </div>
+        <button class="floor-arrow" onclick="switchFloor(1)">►</button>
+      </div>
+    </div>
+
+    <!-- 平屋パネル -->
+    <div id="plan-hiraya" class="plan-tab-panel">
+      <img class="floor-img" src="./img/PLAN_hiraya.png" alt="平屋間取り" style="width:80%; display:block; margin:0 0 0 12%;">
+      <div class="floor-info" style="text-align:center;">
+        延床面積 / 81.98㎡（24.80坪）　1F床面積 / 81.98㎡（24.80坪）
+      </div>
+    </div>
+  </div>
+
+  <div id="plan-desc-2kai" class="plan-description">
+    1Fは水回りを集約し、効率的な家事動線と工夫ある収納を配置。2Fはファミリークローゼットで衣類をまとめ、各居室もすっきり。ホールのフリースペースは、リモートワークやDIYなど多用途に使えます。
+  </div>
+  <div id="plan-desc-hiraya" class="plan-description" style="display:none">
+    平屋ならではのフラットな動線で、家族が自然とつながる暮らしを実現。広がりのあるLDKと、使いやすい水回り・収納が生活をサポートします。
+  </div>
+
+</section>
+
+<!-- SPECセクション -->
+<section id="spec" style="width:100%; max-width:390px; line-height:0; font-size:0; margin-bottom:-2px;">
+  <img src="./img/SPEC.png" alt="SPEC" style="width:100%; display:block;">
+</section>
+
+<!-- REQUESTセクション -->
+<section style="width:100%; max-width:390px; background:#cdc7a9; padding:32px 20px 40px;">
+  <a href="https://shizensozainoie.co.jp/form-request/" target="_blank">
+    <img src="./img/request.png" alt="資料請求はこちら" style="width:100%; display:block;">
+  </a>
+  <p style="margin-top:20px; font-size:16px; color:#3a3630; line-height:2; text-align:left; display:table; width:80%; margin-left:auto; margin-right:auto; font-family:-apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;">『HYLO』の考え方や暮らしの魅力をまとめたカタログや、家づくり・ライフプランについて気軽に相談できる無料相談をご用意しています。まずはお気軽にお問い合わせください。</p>
+  <img src="./img/OPEN.png" alt="OPEN" style="width:calc(100% + 40px); display:block; margin-top:24px; margin-left:-20px;">
+</section>
+
+<!-- フッターセクション -->
+<section style="width:100%; max-width:390px; background:#3e3a39; padding:32px 24px 40px;">
+  <a href="tel:0120025445">
+    <img src="./img/tell.png" alt="お客様専用フリーダイヤル" style="width:100%; display:block;">
+  </a>
+  <img src="./img/company.png" alt="HARMONY" style="width:90%; display:block; margin-top:24px; margin-left:auto; margin-right:auto;">
+</section>
+
+<script>
+// モバイルメニュー開閉
+function openMenu() {
+  document.getElementById('mobile-menu').classList.add('open');
+  document.getElementById('mobile-menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('mobile-menu-overlay').classList.remove('open');
+}
+
+// PLANタブ切り替え
+function switchPlanTab(id, btn) {
+  document.querySelectorAll('.plan-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.plan-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('plan-' + id).classList.add('active');
+  btn.classList.add('active');
+  // 説明テキスト切り替え
+  document.getElementById('plan-desc-2kai').style.display = (id === '2kai') ? '' : 'none';
+  document.getElementById('plan-desc-hiraya').style.display = (id === 'hiraya') ? '' : 'none';
+}
+
+// PLANタブパネルの高さを2階建てのサイズに固定
+window.addEventListener('load', function() {
+  const panel2kai = document.getElementById('plan-2kai');
+  if (panel2kai) {
+    const fixedH = panel2kai.offsetHeight;
+    document.querySelectorAll('.plan-tab-panel').forEach(p => {
+      p.style.minHeight = fixedH + 'px';
+    });
+  }
+});
+
+// 1F/2F 矢印ナビ
+const floorSlides = ['floor-1f', 'floor-2f'];
+let currentFloor = 0;
+function switchFloor(dir) {
+  document.getElementById(floorSlides[currentFloor]).classList.remove('active');
+  currentFloor = (currentFloor + dir + floorSlides.length) % floorSlides.length;
+  document.getElementById(floorSlides[currentFloor]).classList.add('active');
+}
+
+// ============================================================
+// ポイントセクション フレーム位置設定（ここの数字を変えてね！）
+// top   : 上からの位置（0〜1 の割合。0.1 なら上から10%）
+// width : 横幅（1.0 = 100%、1.2 = 120% など）
+// ============================================================
+const FRAME_CONFIG = [
+  { top: 0.025, width: 1.0 },  // フレーム1
+  { top: 0.2988, width: 1.0 },  // フレーム2
+  { top: 0.5443, width: 1.0 },  // フレーム3
+  { top: 0.7774, width: 1.0 },  // フレーム4
+];
+
+function applyFramePositions() {
+  const container = document.querySelector('.point-container');
+  if (!container) return;
+  const h = container.getBoundingClientRect().height;
+  const w = container.getBoundingClientRect().width;
+  FRAME_CONFIG.forEach((cfg, i) => {
+    const el = document.querySelector('.pf' + (i + 1));
+    if (!el) return;
+    el.style.top   = (h * cfg.top) + 'px';
+    el.style.width = (w * cfg.width) + 'px';
+  });
+}
+
+window.addEventListener('load',   applyFramePositions);
+window.addEventListener('resize', applyFramePositions);
+// 確実に反映させるため少し遅らせても実行
+setTimeout(applyFramePositions, 100);
+setTimeout(applyFramePositions, 500);
+
+const INTERVAL = 3000;
+
+// 画像エラー時にプレースホルダーへ差し替え
+document.querySelectorAll('.slides img').forEach(img => {
+  img.addEventListener('error', () => {
+    const ph = document.createElement('div');
+    ph.className = 'placeholder';
+    ph.innerHTML = `${img.alt || '画像'}<br><span>ファイルを差し替えてください</span>`;
+    img.parentNode.replaceChild(ph, img);
+  });
+});
+
+// 各スライドに先頭のクローンを末尾に追加（右から左の無限ループ用）
+function initSlideshow(el) {
+  const first = el.children[0];
+  if (el.children.length > 1) {
+    el.appendChild(first.cloneNode(true));
+  }
+  return { el, current: 0, total: el.children.length };
+}
+
+const slideshows = [
+  initSlideshow(document.getElementById('slides1')),
+  initSlideshow(document.getElementById('slides2')),
+  initSlideshow(document.getElementById('slides3')),
+];
+
+// ======================================
+// ポン画像の切り替え
+// ======================================
+const popImgs = document.querySelectorAll('.pop-img');
+
+function showSet(setNum) {
+  popImgs.forEach(el => {
+    // トランジションを切ってからリセット
+    el.style.transition = 'none';
+    el.style.animation = 'none';
+    el.style.opacity = '0';
+  });
+
+  // 対象セットだけポンと表示
+  popImgs.forEach(el => {
+    if (el.dataset.set === String(setNum)) {
+      const delay = parseFloat(el.dataset.delay) || 0;
+      // リフローを挟んでアニメーションを再発火
+      void el.offsetWidth;
+      el.style.transition = '';
+      el.style.animation = `pop 0.2s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s forwards`;
+    }
+  });
+}
+
+// ポン画像をなめらかにフェードアウト
+function fadeOutPopImgs() {
+  popImgs.forEach(el => {
+    el.style.transition = 'opacity 0.4s ease';
+    el.style.opacity = '0';
+    // フェード完了後にアニメーションもリセット
+    setTimeout(() => {
+      el.style.animation = 'none';
+      el.style.transition = 'none';
+    }, 400);
+  });
+}
+
+// 起動時はセット1を表示
+showSet(1);
+
+// 右から左へ1枚進める
+function advance(sw, isMain) {
+  if (sw.total < 2) return;
+
+  // メインスライドのみ：スライド開始と同時になめらかにフェードアウト
+  if (isMain) {
+    fadeOutPopImgs();
+  }
+
+  sw.current++;
+  sw.el.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+  sw.el.style.transform = `translateX(-${sw.current * 100}%)`;
+
+  // クローン（末尾）に到達したら瞬時に先頭へ戻す
+  sw.el.addEventListener('transitionend', function reset() {
+    sw.el.removeEventListener('transitionend', reset);
+    if (sw.current >= sw.total - 1) {
+      sw.current = 0;
+      sw.el.style.transition = 'none';
+      sw.el.style.transform = 'translateX(0)';
+    }
+
+    // メインスライドのみ：現在のスライドに合わせてセット切り替え
+    if (isMain) {
+      const realIndex = sw.current % (sw.total - 1 || 1);
+      showSet(realIndex === 0 ? 1 : realIndex + 1);
+    }
+  });
+}
+
+// 全フレームを同時に切り替え（右から左のみ）
+setInterval(() => {
+  slideshows.forEach((sw, i) => advance(sw, i === 0));
+}, INTERVAL);
+
+// ======================================
+// ポイントセクション：ディゾルブ切り替え
+// ======================================
+document.querySelectorAll('.point-frame').forEach(frame => {
+  const imgs = frame.querySelectorAll('.pf-img');
+  let current = 0;
+  setInterval(() => {
+    imgs[current].classList.remove('active');
+    current = (current + 1) % imgs.length;
+    imgs[current].classList.add('active');
+  }, INTERVAL);
+});
+</script>
+
+<!-- モバイルメニュー背景オーバーレイ -->
+<div id="mobile-menu-overlay" class="mobile-menu-overlay" onclick="closeMenu()"></div>
+
+<!-- モバイルメニュー -->
+<div id="mobile-menu" class="mobile-menu">
+  <button class="mobile-menu-close" onclick="closeMenu()">✕</button>
+  <nav class="mobile-menu-nav">
+    <a href="#concept" class="mobile-menu-item" onclick="closeMenu()">
+      <img src="./img/MENU-CONCEPT.png" alt="CONCEPT">
+    </a>
+    <hr class="mobile-menu-divider">
+    <a href="#point" class="mobile-menu-item" onclick="closeMenu()">
+      <img src="./img/MENU-POINT.png" alt="POINT">
+    </a>
+    <hr class="mobile-menu-divider">
+    <a href="#plan" class="mobile-menu-item" onclick="closeMenu()">
+      <img src="./img/MENU-PLAN.png" alt="PLAN">
+    </a>
+    <hr class="mobile-menu-divider">
+    <a href="#spec" class="mobile-menu-item" onclick="closeMenu()">
+      <img src="./img/MENU-SPEC.png" alt="SPEC">
+    </a>
+  </nav>
+  <a href="https://shizensozainoie.co.jp/form-request/" target="_blank" class="mobile-menu-cta">
+    <img src="./img/MENU-request.png" alt="資料請求はこちらから">
+  </a>
+</div>
+
+<!-- PC 左パネル -->
+<div class="pc-left">
+  <div class="pc-left-inner">
+    <div class="pc-house-imgs">
+      <img src="./img/HYLO_2F.png" alt="HYLO 2F">
+      <img src="./img/hiraya.png"  alt="HYLO 平屋">
+    </div>
+    <div class="pc-nav-grid">
+      <a href="#concept" class="pc-nav-btn">
+        <img src="./img/PC-concept.png" alt="CONCEPT">
+      </a>
+      <a href="#point" class="pc-nav-btn">
+        <img src="./img/PC-POINT.png" alt="POINT">
+      </a>
+      <a href="#plan" class="pc-nav-btn">
+        <img src="./img/PC-PLAN.png" alt="PLAN">
+      </a>
+      <a href="#spec" class="pc-nav-btn">
+        <img src="./img/PC-SPEC.png" alt="SPEC">
+      </a>
+    </div>
+    <a href="https://shizensozainoie.co.jp/form-request/" target="_blank" class="pc-cta-btn">
+      <img src="./img/PC-request.png" alt="HYLOの資料請求はこちらから">
+    </a>
+    <a href="https://shizensozainoie.co.jp/" target="_blank" class="pc-harmony">
+      <img src="./img/LOGO_yoko.png" alt="HARMONY">
+    </a>
+  </div>
+</div>
+
+<!-- PC 右パネル -->
+<div class="pc-right">
+  <div class="pc-right-track">
+    日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家　日常の中に、〝小さな幸せ〞を見つける家
+  </div>
+</div>
+
+</body>
+</html>
